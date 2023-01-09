@@ -5,9 +5,11 @@ import (
 )
 
 func GetSunsetQuality(c *gin.Context) {
+
 }
 
 func CreateUser(c *gin.Context) {
+
 }
 
 func UserLogin(c *gin.Context) {
