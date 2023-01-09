@@ -15,12 +15,26 @@ type RuleEntity struct {
 	Distance   float32 `json:"distance"`
 	Quality    float32 `json:"quality"`
 	Type       string  `json:"type"`
-	Time       string  `json:"time"`
-	Frquency   int     `json:"frequency"`
+	Time       int64   `json:"time"`
+	Frequency  int     `json:"frequency"`
 	State      int     `json:"state"`
-	CreatedOn  string  `json:"created_on"`
-	ModifiedOn string  `json:"modified_on"`
+	CreatedOn  int64   `json:"created_on"`
+	ModifiedOn int64   `json:"modified_on"`
 }
+
+// type Geometry struct {
+// 	Type       string  `json:"type"`
+// 	Coordinate string  `json:"coordinate"`
+// 	Distance   float32 `json:"distance"`
+// }
+
+// type RuleProperty struct {
+// 	Type       string  `json:"type"`
+// 	Time       string  `json:"time"`
+// 	UserID     string  `json:"user_id"`
+// 	Email      string `json:"email"`
+// 	Frequency  int     `json:"frequency"`
+// }
 
 func (rule *RuleEntity) BeforeCreate(scope *gorm.Scope) {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
@@ -53,7 +67,7 @@ func CreateRuleEntity(data RuleEntity) error {
 
 func UpdateRuleEntity(data RuleEntity) error {
 
-	err := db.Where("rule_id = ?", data.RuleID).Update(&data).Error
+	err := db.Model(&RuleEntity{}).Where("rule_id = ?", data.RuleID).Update(&data).Error
 
 	if err != nil {
 		return err

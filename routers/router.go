@@ -16,13 +16,13 @@ func InitRouter() *gin.Engine {
 
 	apiv1 := r.Group("/api/v1")
 	{
-		apiv1.GET("/quality", GetSunsetQuality)
+		apiv1.POST("/quality", GetSunsetQuality)
 
 		apiv1.POST("/register", CreateUser)
 
 		apiv1.POST("/login", UserLogin)
 
-		apiv1.GET("/rules", GetAlarmRules)
+		apiv1.POST("/rules", GetAlarmRules)
 
 		apiv1.POST("/create_rule", CreateAlarmRule)
 

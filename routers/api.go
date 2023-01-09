@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/wwkeyboard/sunsetwx/models"
 )
 
@@ -16,15 +17,14 @@ func GetSunsetQuality(c *gin.Context) {
 }
 
 func CreateUser(c *gin.Context) {
-	data := make(map[string]interface{})
-	data["name"] = c.Query("name")
-	data["country"] = c.Query("country")
-	data["cell"] = c.Query("cell")
-	data["email"] = c.Query("email")
-	data["password"] = c.Query("password")
-	data["state"] = c.Query("state")
-
-	userID, err := models.CreateUser(data)
+	var data models.User
+	err := c.ShouldBindJSON(&data)
+	if err != nil {
+		log.Printf("CreateUser bind JSON error, err message: %s", err)
+	}
+	data.State = 1
+	data.UserID = uuid.NewString()
+	err = models.CreateUser(data)
 	if err != nil {
 		log.Printf("CreateUser Error, err message: %s", err)
 		c.JSON(http.StatusOK, gin.H{
@@ -34,14 +34,17 @@ func CreateUser(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"msg":  "success",
-			"data": userID,
+			"data": data.UserID,
 		})
 	}
 }
 
 func UserLogin(c *gin.Context) {
 	data := make(map[string]interface{})
-	data["user_id"] = c.Query("user_id")
+	err := c.BindJSON(&data)
+	if err != nil {
+		log.Printf("UserLogin bind JSON error, err message: %s", err)
+	}
 
 	user, err := models.GetUser(data)
 	if err != nil {
@@ -51,7 +54,7 @@ func UserLogin(c *gin.Context) {
 	pwd := user.Password
 
 	success := -1
-	if pwd == c.Query("password") {
+	if pwd == data["password"] {
 		success = 1
 	}
 
@@ -62,7 +65,10 @@ func UserLogin(c *gin.Context) {
 
 func GetAlarmRules(c *gin.Context) {
 	data := make(map[string]interface{})
-	data["user_id"] = c.Query("user_id")
+	err := c.BindJSON(&data)
+	if err != nil {
+		log.Printf("GetAlarmRules bind JSON error, err message: %s", err)
+	}
 
 	entities, err := models.GetRuleEntities(data)
 	if err != nil {
@@ -112,9 +118,18 @@ func UpdateAlarmRule(c *gin.Context) {
 
 func DeleteAlarmRule(c *gin.Context) {
 	data := make(map[string]interface{})
-	data["rule_id"] = c.Query("rule_id")
-	err := models.DeleteRuleEntity(data)
+	err := c.BindJSON(&data)
 	if err != nil {
+		log.Printf("DeleteAlarmRule bind JSON error, err message: %s", err)
+	}
+	success := 1
+	err = models.DeleteRuleEntity(data)
+	if err != nil {
+		success = -1
 		log.Printf("DeleteAlarmRule error, err message: %s", err)
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": success,
+	})
 }

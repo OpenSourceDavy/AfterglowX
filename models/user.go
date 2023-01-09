@@ -4,7 +4,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 )
 
@@ -17,50 +16,40 @@ type User struct {
 	Email      string `json:"email"`
 	Password   string `json:"password"`
 	State      int    `json:"state"`
-	CreatedOn  string `json:"created_on"`
-	ModifiedOn string `json:"modified_on"`
+	CreatedOn  int64  `json:"created_on"`
+	ModifiedOn int64  `json:"modified_on"`
 }
 
 func (user *User) BeforeCreate(scope *gorm.Scope) {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
+
 }
 
 func (user *User) BeforeUpdate(scope *gorm.Scope) {
 	scope.SetColumn("ModifiedOn", time.Now().Unix())
 }
 
-func CreateUser(data map[string]interface{}) (string, error) {
-	id := uuid.NewString()
+func CreateUser(data User) error {
 
-	err := db.Create(&User{
-		UserID:   id,
-		UserName: data["name"].(string),
-		Country:  data["country"].(string),
-		Cell:     data["cell"].(string),
-		Email:    data["email"].(string),
-		Password: data["password"].(string),
-		State:    data["state"].(int),
-	}).Error
+	err := db.Create(&data).Error
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return id, err
+	return err
 }
 
 func GetUser(data map[string]interface{}) (res User, err error) {
-	userID := data["user_id"].(string)
+	email := data["email"].(string)
+	cell := data["cell"].(string)
 
-	if len(userID) > 0 {
-		err = db.Where("user_id = ?", userID).First(&res).Error
+	if len(email) > 0 {
+		err = db.Where("email = ?", email).First(&res).Error
+	} else if len(cell) > 0 {
+		err = db.Where("cell = ?", cell).First(&res).Error
 	} else {
-		log.Fatal("GetUser error")
-		return res, err
-	}
-
-	if err != nil {
-		log.Fatal("GetUser error")
+		log.Printf("GetUser from DB error,, err message: %s", err)
 	}
 
 	return res, err
