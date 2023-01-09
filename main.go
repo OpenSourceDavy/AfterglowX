@@ -5,22 +5,17 @@ import (
 	"net/http"
 
 	"github.com/wwkeyboard/sunsetwx/routers"
-	setting "github.com/wwkeyboard/sunsetwx/settings"
+	"github.com/wwkeyboard/sunsetwx/settings"
 )
 
 func main() {
 	router := routers.InitRouter()
-	// router.GET("/test", func(c *gin.Context) {
-	// 	c.JSON(200, gin.H{
-	// 		"message": "test",
-	// 	})
-	// })
 
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", setting.HTTPPort),
+		Addr:           fmt.Sprintf(":%d", settings.HTTPPort),
 		Handler:        router,
-		ReadTimeout:    setting.ReadTimeout,
-		WriteTimeout:   setting.WriteTimeout,
+		ReadTimeout:    settings.ReadTimeout,
+		WriteTimeout:   settings.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
 

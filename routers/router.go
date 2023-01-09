@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	setting "github.com/wwkeyboard/sunsetwx/settings"
+	"github.com/wwkeyboard/sunsetwx/settings"
 )
 
 func InitRouter() *gin.Engine {
@@ -12,7 +12,7 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Recovery())
 
-	gin.SetMode(setting.RunMode)
+	gin.SetMode(settings.RunMode)
 
 	apiv1 := r.Group("/api/v1")
 	{
