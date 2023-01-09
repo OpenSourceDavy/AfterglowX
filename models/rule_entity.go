@@ -30,9 +30,9 @@ func (rule *RuleEntity) BeforeUpdate(scope *gorm.Scope) {
 	scope.SetColumn("ModifiedOn", time.Now().Unix())
 }
 
-func (rule *RuleEntity) GerRuleEntities(data map[string]interface{}) (res []RuleEntity, err error) {
+func GetRuleEntities(data map[string]interface{}) (res []RuleEntity, err error) {
 
-	err = db.Where("name = ?", data["rule_id"].(string)).Find(&res).Error
+	err = db.Where("user_id = ?", data["user_id"].(string)).Find(&res).Error
 	if err != nil {
 		return nil, err
 	}
@@ -40,20 +40,20 @@ func (rule *RuleEntity) GerRuleEntities(data map[string]interface{}) (res []Rule
 	return
 }
 
-func (rule *RuleEntity) CreateRuleEntity(data map[string]interface{}) error {
-	id := uuid.NewString()
+func CreateRuleEntity(data RuleEntity) error {
+	data.RuleID = uuid.NewString()
 
-	err := db.Create(&RuleEntity{
-		RuleID:     id,
-		UserID:     data["user_id"].(string),
-		Coordinate: data["coordinate"].(string),
-		Distance:   data["distance"].(float32),
-		Quality:    data["quality"].(float32),
-		Type:       data["type"].(string),
-		Time:       data["time"].(string),
-		Frquency:   data["frequency"].(int),
-		State:      data["state"].(int),
-	}).Error
+	err := db.Create(&data).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateRuleEntity(data RuleEntity) error {
+
+	err := db.Where("rule_id = ?", data.RuleID).Update(&data).Error
 
 	if err != nil {
 		return err
@@ -62,31 +62,9 @@ func (rule *RuleEntity) CreateRuleEntity(data map[string]interface{}) error {
 	return nil
 }
 
-func (rule *RuleEntity) UpdateRuleEntity(data map[string]interface{}) error {
-	id := uuid.NewString()
+func DeleteRuleEntity(data map[string]interface{}) error {
 
-	err := db.Update(&RuleEntity{
-		RuleID:     id,
-		UserID:     data["user_id"].(string),
-		Coordinate: data["coordinate"].(string),
-		Distance:   data["distance"].(float32),
-		Quality:    data["quality"].(float32),
-		Type:       data["type"].(string),
-		Time:       data["time"].(string),
-		Frquency:   data["frequency"].(int),
-		State:      data["state"].(int),
-	}).Error
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (rule *RuleEntity) DeleteRuleEntity(data map[string]interface{}) error {
-
-	err := db.Where("rule_id = ?", data["rule_id"].(string)).Delete(&rule).Error
+	err := db.Where("rule_id = ?", data["rule_id"].(string)).Delete(&RuleEntity{}).Error
 
 	if err != nil {
 		return err

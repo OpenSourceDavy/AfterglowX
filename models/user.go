@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,7 +29,7 @@ func (user *User) BeforeUpdate(scope *gorm.Scope) {
 	scope.SetColumn("ModifiedOn", time.Now().Unix())
 }
 
-func (user *User) CreateUser(data map[string]interface{}) error {
+func CreateUser(data map[string]interface{}) (string, error) {
 	id := uuid.NewString()
 
 	err := db.Create(&User{
@@ -42,8 +43,25 @@ func (user *User) CreateUser(data map[string]interface{}) error {
 	}).Error
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return id, err
+}
+
+func GetUser(data map[string]interface{}) (res User, err error) {
+	userID := data["user_id"].(string)
+
+	if len(userID) > 0 {
+		err = db.Where("user_id = ?", userID).First(&res).Error
+	} else {
+		log.Fatal("GetUser error")
+		return res, err
+	}
+
+	if err != nil {
+		log.Fatal("GetUser error")
+	}
+
+	return res, err
 }
