@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 // sunset time, sunrise time,
@@ -35,6 +36,7 @@ type Metrics struct {
 	AvgWindDirection int64
 	CloudCoverage    int64
 	Visibility       int64
+	AirQuality       int64
 }
 
 type OpenWeatherResp struct {
@@ -97,20 +99,99 @@ type OpenWeatherCity struct {
 	Sunset     int64  `json:"sunset"`
 }
 
-func GetMetrics(lat float64, lon float64, mType string) (Metrics, error) {
+type AQIResp struct {
+	Status string `json:"status"`
+	Data   struct {
+		Aqi          int64 `json:"aqi"`
+		Idx          int64 `json:"idx"`
+		Attributions []struct {
+			URL  string `json:"url"`
+			Name string `json:"name"`
+			Logo string `json:"logo,omitempty"`
+		} `json:"attributions"`
+		City struct {
+			Geo      []float64 `json:"geo"`
+			Name     string    `json:"name"`
+			URL      string    `json:"url"`
+			Location string    `json:"location"`
+		} `json:"city"`
+		Dominentpol string `json:"dominentpol"`
+		Iaqi        struct {
+			Dew struct {
+				V int64 `json:"v"`
+			} `json:"dew"`
+			H struct {
+				V float64 `json:"v"`
+			} `json:"h"`
+			No2 struct {
+				V float64 `json:"v"`
+			} `json:"no2"`
+			O3 struct {
+				V float64 `json:"v"`
+			} `json:"o3"`
+			P struct {
+				V float64 `json:"v"`
+			} `json:"p"`
+			Pm25 struct {
+				V int64 `json:"v"`
+			} `json:"pm25"`
+			T struct {
+				V float64 `json:"v"`
+			} `json:"t"`
+			W struct {
+				V float64 `json:"v"`
+			} `json:"w"`
+			Wg struct {
+				V float64 `json:"v"`
+			} `json:"wg"`
+		} `json:"iaqi"`
+		Time struct {
+			S   string `json:"s"`
+			Tz  string `json:"tz"`
+			V   int64  `json:"v"`
+			Iso string `json:"iso"`
+		} `json:"time"`
+		Forecast struct {
+			Daily struct {
+				O3 []struct {
+					Avg int64  `json:"avg"`
+					Day string `json:"day"`
+					Max int64  `json:"max"`
+					Min int64  `json:"min"`
+				} `json:"o3"`
+				Pm10 []struct {
+					Avg int64  `json:"avg"`
+					Day string `json:"day"`
+					Max int64  `json:"max"`
+					Min int64  `json:"min"`
+				} `json:"pm10"`
+				Pm25 []struct {
+					Avg int64  `json:"avg"`
+					Day string `json:"day"`
+					Max int64  `json:"max"`
+					Min int64  `json:"min"`
+				} `json:"pm25"`
+			} `json:"daily"`
+		} `json:"forecast"`
+		Debug struct {
+			Sync time.Time `json:"sync"`
+		} `json:"debug"`
+	} `json:"data"`
+}
+
+func QueryAPI(param map[string]string, method string, url string) ([]byte, error) {
 	client := &http.Client{}
-	var res Metrics
-	req, err := http.NewRequest(http.MethodGet, "https://pro.openweathermap.org/data/2.5/forecast/hourly", nil)
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// appending to existing query args
 	q := req.URL.Query()
-	q.Add("lat", fmt.Sprintf("%f", lat))
-	q.Add("lon", fmt.Sprintf("%f", lon))
-	q.Add("appid", "b51325554e1adbdfb37ec4cbed1dcfd5")
-	q.Add("units", "metric")
+	// appending to existing query args
+	for key, item := range param {
+		q.Add(key, item)
+	}
 
 	// assign encoded query string to http request
 	req.URL.RawQuery = q.Encode()
@@ -118,13 +199,29 @@ func GetMetrics(lat float64, lon float64, mType string) (Metrics, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Errored when sending request to the server")
-		return res, err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 	responseBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	return responseBody, err
+}
+
+func GetMetrics(lat float64, lon float64, mType string) (Metrics, error) {
+	param := make(map[string]string)
+	param["lat"] = fmt.Sprintf("%f", lat)
+	param["lon"] = fmt.Sprintf("%f", lon)
+	param["appid"] = "b51325554e1adbdfb37ec4cbed1dcfd5"
+	param["units"] = "metric"
+	url := "https://pro.openweathermap.org/data/2.5/forecast/hourly"
+
+	responseBody, err := QueryAPI(param, http.MethodGet, url)
+	if err != nil {
+		fmt.Println("QueryAPI error.")
 	}
 
 	var openWeatherResp OpenWeatherResp
@@ -180,6 +277,24 @@ func GetMetrics(lat float64, lon float64, mType string) (Metrics, error) {
 	metric.CloudCoverage = openWeatherResp.MetricList[sunSetRiseIdx].Clouds.All
 	metric.Visibility = openWeatherResp.MetricList[sunSetRiseIdx].Visibility
 
+	param = make(map[string]string)
+	lats := fmt.Sprintf("%f", lat)
+	lons := fmt.Sprintf("%f", lon)
+	param["token"] = "56ff933debba640135fa45e9d61713d8d786af63"
+	url = "https://api.waqi.info/feed/geo:" + lats + ";" + lons + "/"
+
+	responseBody, err = QueryAPI(param, http.MethodGet, url)
+	if err != nil {
+		fmt.Println("QueryAPI error.")
+	}
+
+	var aqiResp AQIResp
+	if err := json.Unmarshal(responseBody, &aqiResp); err != nil {
+		log.Printf("Unmarshal err, err message: %s", err)
+	}
+
+	metric.AirQuality = aqiResp.Data.Aqi
+
 	return metric, nil
 }
 
@@ -187,8 +302,13 @@ func GetQuality(metric Metrics) float64 {
 	total := RateCloudCoverage(metric.CloudCoverage) +
 		RateHumidity(metric.Humidity) +
 		RateAvgWindSpeed(int64(metric.AvgWindSpeed)) +
-		RateWindDirectionChange(metric.WindDirection, metric.AvgWindDirection)
-	return float64(total) / 16.00
+		RateWindDirectionChange(metric.WindDirection, metric.AvgWindDirection) +
+		RateAirQuality(metric.AirQuality)
+	if total > 0 {
+		return float64(total) / 20.00
+	} else {
+		return 0
+	}
 }
 
 func RateCloudCoverage(n int64) int64 {
@@ -217,23 +337,23 @@ func RateCloudCoverage(n int64) int64 {
 
 func RateHumidity(n int64) int64 {
 	if n > 90 {
-		return 0
+		return -5
 	}
 
 	if n > 70 {
-		return 1
+		return -2
 	}
 
 	if n > 50 {
-		return 2
+		return 0
 	}
 
 	if n > 30 {
-		return 3
+		return 1
 	}
 
 	if n > 10 {
-		return 4
+		return 2
 	}
 
 	return 0
@@ -283,6 +403,34 @@ func RateAvgWindSpeed(n int64) int64 {
 
 	if n > 2 {
 		return 4
+	}
+
+	return 0
+}
+
+func RateAirQuality(n int64) int64 {
+	if n > 200 {
+		return -10
+	}
+
+	if n > 100 {
+		return -5
+	}
+
+	if n > 50 {
+		return -1
+	}
+
+	if n > 20 {
+		return 1
+	}
+
+	if n > 10 {
+		return 2
+	}
+
+	if n > 0 {
+		return 3
 	}
 
 	return 0
