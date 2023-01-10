@@ -22,20 +22,6 @@ type RuleEntity struct {
 	ModifiedOn int64   `json:"modified_on"`
 }
 
-// type Geometry struct {
-// 	Type       string  `json:"type"`
-// 	Coordinate string  `json:"coordinate"`
-// 	Distance   float32 `json:"distance"`
-// }
-
-// type RuleProperty struct {
-// 	Type       string  `json:"type"`
-// 	Time       string  `json:"time"`
-// 	UserID     string  `json:"user_id"`
-// 	Email      string `json:"email"`
-// 	Frequency  int     `json:"frequency"`
-// }
-
 func (rule *RuleEntity) BeforeCreate(scope *gorm.Scope) {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
 }
