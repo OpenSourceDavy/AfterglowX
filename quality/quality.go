@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/wwkeyboard/sunsetwx/logs"
 )
 
 // sunset time, sunrise time,
@@ -184,7 +185,7 @@ func QueryAPI(param map[string]string, method string, url string) ([]byte, error
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal(err)
+		logs.Log.Error("QueryAPI error, error message: %s", err)
 	}
 
 	q := req.URL.Query()
@@ -198,14 +199,14 @@ func QueryAPI(param map[string]string, method string, url string) ([]byte, error
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Errored when sending request to the server")
+		logs.Log.Error("QueryAPI Do error, error message: %s", err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 	responseBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		logs.Log.Error("QueryAPI ReadAll error, error message: %s", err)
 	}
 
 	return responseBody, err
@@ -221,12 +222,12 @@ func GetMetrics(lat float64, lon float64, mType string) (Metrics, error) {
 
 	responseBody, err := QueryAPI(param, http.MethodGet, url)
 	if err != nil {
-		fmt.Println("QueryAPI error.")
+		logs.Log.Error("GetMetrics OpenWeatherMap error, error message: %s", err)
 	}
 
 	var openWeatherResp OpenWeatherResp
 	if err := json.Unmarshal(responseBody, &openWeatherResp); err != nil {
-		fmt.Println("Can not unmarshal JSON")
+		logs.Log.Error("GetMetrics Unmarshal error, error message: %s", err)
 	}
 
 	var metric Metrics
@@ -285,12 +286,12 @@ func GetMetrics(lat float64, lon float64, mType string) (Metrics, error) {
 
 	responseBody, err = QueryAPI(param, http.MethodGet, url)
 	if err != nil {
-		fmt.Println("QueryAPI error.")
+		logs.Log.Error("GetMetrics AQI error, error message: %s", err)
 	}
 
 	var aqiResp AQIResp
 	if err := json.Unmarshal(responseBody, &aqiResp); err != nil {
-		log.Printf("Unmarshal err, err message: %s", err)
+		logs.Log.Error("GetMetrics AQI Unmarshal error, error message: %s", err)
 	}
 
 	metric.AirQuality = aqiResp.Data.Aqi

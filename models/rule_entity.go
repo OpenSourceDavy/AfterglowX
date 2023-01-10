@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
+	"github.com/wwkeyboard/sunsetwx/logs"
 )
 
 type RuleEntity struct {
@@ -34,6 +35,7 @@ func GetRuleEntities(data map[string]interface{}) (res []RuleEntity, err error) 
 
 	err = db.Where("user_id = ?", data["user_id"].(string)).Find(&res).Error
 	if err != nil {
+		logs.Log.Error("GetRuleEntities error, error message: %s", err)
 		return nil, err
 	}
 
@@ -45,6 +47,7 @@ func CreateRuleEntity(data RuleEntity) error {
 
 	err := db.Create(&data).Error
 	if err != nil {
+		logs.Log.Error("CreateRuleEntity error, error message: %s", err)
 		return err
 	}
 
@@ -56,6 +59,7 @@ func UpdateRuleEntity(data RuleEntity) error {
 	err := db.Model(&RuleEntity{}).Where("rule_id = ?", data.RuleID).Update(&data).Error
 
 	if err != nil {
+		logs.Log.Error("UpdateRuleEntity error, error message: %s", err)
 		return err
 	}
 
@@ -67,6 +71,7 @@ func DeleteRuleEntity(data map[string]interface{}) error {
 	err := db.Where("rule_id = ?", data["rule_id"].(string)).Delete(&RuleEntity{}).Error
 
 	if err != nil {
+		logs.Log.Error("DeleteRuleEntity error, error message: %s", err)
 		return err
 	}
 

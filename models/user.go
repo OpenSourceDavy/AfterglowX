@@ -1,10 +1,10 @@
 package models
 
 import (
-	"log"
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/wwkeyboard/sunsetwx/logs"
 )
 
 type User struct {
@@ -34,6 +34,7 @@ func CreateUser(data User) error {
 	err := db.Create(&data).Error
 
 	if err != nil {
+		logs.Log.Error("CreateUser error, error message: %s", err)
 		return err
 	}
 
@@ -49,7 +50,11 @@ func GetUser(data map[string]interface{}) (res User, err error) {
 	} else if len(cell) > 0 {
 		err = db.Where("cell = ?", cell).First(&res).Error
 	} else {
-		log.Printf("GetUser from DB error,, err message: %s", err)
+		logs.Log.Error("GetUser empty, error message: %s", err)
+	}
+
+	if err != nil {
+		logs.Log.Error("GetUser error, error message: %s", err)
 	}
 
 	return res, err

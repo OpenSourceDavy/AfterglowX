@@ -2,10 +2,10 @@ package models
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/wwkeyboard/sunsetwx/logs"
 	"github.com/wwkeyboard/sunsetwx/settings"
 )
 
@@ -25,7 +25,7 @@ func init() {
 
 	sec, err := settings.Cfg.GetSection("database")
 	if err != nil {
-		log.Fatal(2, "Fail to get section 'database': %v", err)
+		logs.Log.Error("Fail to get section 'database': %v", err)
 	}
 
 	dbType = sec.Key("TYPE").String()
@@ -42,7 +42,7 @@ func init() {
 		dbName))
 
 	if err != nil {
-		log.Println(err)
+		logs.Log.Error("Fail to open: %v", err)
 	}
 
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
