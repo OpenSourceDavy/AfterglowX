@@ -7,12 +7,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/wwkeyboard/sunsetwx/models"
+	"github.com/wwkeyboard/sunsetwx/quality"
 )
 
 func GetSunsetQuality(c *gin.Context) {
-	quality := 0.55
+	data := make(map[string]interface{})
+	err := c.ShouldBindJSON(&data)
+	if err != nil {
+		log.Printf("GetSunsetQuality bind JSON error, err message: %s", err)
+	}
+	m, _ := quality.GetMetrics(data["lat"].(float64), data["lon"].(float64), data["type"].(string))
+	qua := quality.GetQuality(m)
 	c.JSON(http.StatusOK, gin.H{
-		"quality": quality,
+		"quality": qua,
 	})
 }
 

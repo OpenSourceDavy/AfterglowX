@@ -1,4 +1,4 @@
-package main
+package quality
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 // sunset time, sunrise time,
@@ -98,7 +97,7 @@ type OpenWeatherCity struct {
 	Sunset     int64  `json:"sunset"`
 }
 
-func GetMetrics(lat int64, lon int64, mType string) (Metrics, error) {
+func GetMetrics(lat float64, lon float64, mType string) (Metrics, error) {
 	client := &http.Client{}
 	var res Metrics
 	req, err := http.NewRequest(http.MethodGet, "https://pro.openweathermap.org/data/2.5/forecast/hourly", nil)
@@ -108,8 +107,8 @@ func GetMetrics(lat int64, lon int64, mType string) (Metrics, error) {
 
 	// appending to existing query args
 	q := req.URL.Query()
-	q.Add("lat", strconv.FormatInt(lat, 10))
-	q.Add("lon", strconv.FormatInt(lon, 10))
+	q.Add("lat", fmt.Sprintf("%f", lat))
+	q.Add("lon", fmt.Sprintf("%f", lon))
 	q.Add("appid", "b51325554e1adbdfb37ec4cbed1dcfd5")
 	q.Add("units", "metric")
 
@@ -145,11 +144,11 @@ func GetMetrics(lat int64, lon int64, mType string) (Metrics, error) {
 	var totalWindDirection int64
 	for i, item := range openWeatherResp.MetricList {
 		var gap int64
-		if mType == "Sunset" {
+		if mType == "sunset" {
 			gap = absInt(item.DT - openWeatherResp.City.Sunset)
 		}
 
-		if mType == "Sunrise" {
+		if mType == "sunrise" {
 			gap = absInt(item.DT - openWeatherResp.City.Sunrise)
 		}
 
