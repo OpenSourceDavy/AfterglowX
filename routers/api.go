@@ -46,6 +46,8 @@ func CreateUser(c *gin.Context) {
 	}
 }
 
+// todo: user not registered
+// todo: jwt
 func UserLogin(c *gin.Context) {
 	data := make(map[string]interface{})
 	err := c.BindJSON(&data)

@@ -33,7 +33,24 @@ func (rule *RuleEntity) BeforeUpdate(scope *gorm.Scope) {
 
 func GetRuleEntities(data map[string]interface{}) (res []RuleEntity, err error) {
 
-	err = db.Where("user_id = ?", data["user_id"].(string)).Find(&res).Error
+	var query *gorm.DB
+	if len(data["user_id"].(string)) > 0 {
+		query = db.Where("user_id = ?", data["user_id"].(string))
+	}
+
+	if len(data["type"].(string)) > 0 {
+		query = db.Where("type = ?", data["type"].(string))
+	}
+
+	if data["state"] != nil {
+		query = db.Where("state = ?", data["state"].(int64))
+	}
+
+	if data["frequency"] != nil {
+		query = db.Where("frequency = ?", data["frequency"].(int64))
+	}
+
+	err = query.Find(&res).Error
 	if err != nil {
 		logs.Log.Error("GetRuleEntities error, error message: %s", err)
 		return nil, err
