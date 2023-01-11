@@ -25,6 +25,9 @@ func NewLoggerWithRotate() *logrus.Logger {
 
 	pathMap := lfshook.WriterMap{
 		logrus.InfoLevel:  writer,
+		logrus.ErrorLevel: writer,
+		logrus.WarnLevel:  writer,
+		logrus.FatalLevel: writer,
 		logrus.PanicLevel: writer,
 	}
 
