@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/wwkeyboard/sunsetwx/routers"
+	"github.com/wwkeyboard/sunsetwx/route"
 	"github.com/wwkeyboard/sunsetwx/settings"
 )
 
 func main() {
-	router := routers.InitRouter()
+	router := route.InitRouter()
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", settings.HTTPPort),

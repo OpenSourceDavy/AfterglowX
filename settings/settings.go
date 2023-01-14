@@ -16,8 +16,11 @@ var (
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 
-	PageSize  int
-	JwtSecret string
+	PageSize            int
+	JwtSecret           string
+	JwtExpHour          int
+	RefreshTokenSecret  string
+	RefreshTokenExpHour int
 )
 
 func init() {
@@ -55,5 +58,8 @@ func LoadApp() {
 	}
 
 	JwtSecret = sec.Key("JWT_SECRET").MustString("!@)*#)!@U#@*!@!)")
+	JwtExpHour = sec.Key("JWT_SECRET_EXPIRATION_HOUR").MustInt(2)
+	RefreshTokenSecret = sec.Key("REFRESH_TOKEN_SECRET").MustString("!@)*#)!@U#@*!(!)")
+	RefreshTokenExpHour = sec.Key("REFRESH_TOKEN_EXPIRATION_HOUR").MustInt(2)
 	PageSize = sec.Key("PAGE_SIZE").MustInt(10)
 }
