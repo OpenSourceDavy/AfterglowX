@@ -15,7 +15,7 @@ type LoginController struct {
 }
 
 func (lc *LoginController) Login(c *gin.Context) {
-	var request domain.LoginRequest
+	var request domain.User
 
 	err := c.ShouldBind(&request)
 	if err != nil {
@@ -24,13 +24,13 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	user, _ := lc.LoginUseCase.GetUserByEmail(c, request.UserInfo.Email)
+	user, _ := lc.LoginUseCase.GetUserByEmail(c, request.Email)
 	if user == (domain.User{}) {
 		c.JSON(http.StatusNotFound, domain.ErrorResponse{Message: "User not found with the given email"})
 		return
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.UserInfo.Password)) != nil {
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)) != nil {
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid credentials"})
 		return
 	}
