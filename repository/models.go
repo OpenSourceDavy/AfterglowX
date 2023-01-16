@@ -1,4 +1,4 @@
-package domain
+package repository
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/wwkeyboard/sunsetwx/settings"
 )
 
-var db *gorm.DB
+var db11 *gorm.DB
 
 type Model struct {
 	ID         int `gorm:"primary_key" json:"id"`
@@ -35,7 +35,7 @@ func init() {
 	host = sec.Key("HOST").String()
 	tablePrefix = sec.Key("TABLE_PREFIX").String()
 
-	db, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+	db11, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		user,
 		password,
 		host,
@@ -49,12 +49,12 @@ func init() {
 		return tablePrefix + defaultTableName
 	}
 
-	db.SingularTable(true)
-	db.LogMode(true)
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
+	db11.SingularTable(true)
+	db11.LogMode(true)
+	db11.DB().SetMaxIdleConns(10)
+	db11.DB().SetMaxOpenConns(100)
 }
 
 func CloseDB() {
-	defer db.Close()
+	defer db11.Close()
 }

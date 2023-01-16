@@ -2,16 +2,15 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/wwkeyboard/sunsetwx/middleware"
 	"github.com/wwkeyboard/sunsetwx/settings"
 )
 
-func Setup(db *gorm.DB, routerV1 *gin.RouterGroup) {
+func Setup(routerV1 *gin.RouterGroup) {
 	publicRouterV1 := routerV1.Group("")
 	// All Public APIs
-	NewRegisterRouter(db, publicRouterV1)
-	NewLoginRouter(db, publicRouterV1)
+	NewRegisterRouter(publicRouterV1)
+	NewLoginRouter(publicRouterV1)
 
 	protectedRouterV1 := routerV1.Group("")
 	// Middleware to verify AccessToken

@@ -28,22 +28,5 @@ func InitRouter() *gin.Engine {
 
 	gin.SetMode(settings.RunMode)
 
-	apiv1 := r.Group("/api/v1")
-	{
-		apiv1.POST("/quality", GetSunsetQuality)
-
-		apiv1.POST("/register", CreateUser)
-
-		apiv1.POST("/login", UserLogin)
-
-		apiv1.POST("/rules", GetAlarmRules)
-
-		apiv1.POST("/create_rule", CreateAlarmRule)
-
-		apiv1.POST("/update_rule", UpdateAlarmRule)
-
-		apiv1.POST("/delete_rule", DeleteAlarmRule)
-	}
-
 	return r
 }

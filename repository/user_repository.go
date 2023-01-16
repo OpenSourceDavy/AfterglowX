@@ -12,9 +12,9 @@ type userRepository struct {
 	DB *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) domain.UserRepository {
+func NewUserRepository() domain.UserRepository {
 	return &userRepository{
-		DB: db,
+		DB: db11,
 	}
 }
 
