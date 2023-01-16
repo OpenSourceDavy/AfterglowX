@@ -16,7 +16,8 @@ type RegisterController struct {
 }
 
 func (rc *RegisterController) Register(c *gin.Context) {
-	var request domain.RegisterRequest
+	// var request domain.RegisterRequest
+	var request domain.User
 
 	err := c.ShouldBind(&request)
 	if err != nil {
@@ -25,14 +26,16 @@ func (rc *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
-	_, err = rc.RegisterUsecase.GetUserByEmail(c, request.UserInfo.Email)
+	_, err = rc.RegisterUsecase.GetUserByEmail(c, request.Email)
 	if err == nil {
-		c.JSON(http.StatusConflict, domain.ErrorResponse{Message: "User already exists with the given email."})
+		c.JSON(http.StatusConflict, domain.ErrorResponse{
+			Code:    -1,
+			Message: "User already exists with the given email."})
 		return
 	}
 
 	encryptedPassword, err := bcrypt.GenerateFromPassword(
-		[]byte(request.UserInfo.Password),
+		[]byte(request.Password),
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
@@ -43,8 +46,8 @@ func (rc *RegisterController) Register(c *gin.Context) {
 
 	user := domain.User{
 		UserID:   uuid.NewString(),
-		UserName: request.UserInfo.UserName,
-		Email:    request.UserInfo.Email,
+		UserName: request.UserName,
+		Email:    request.Email,
 		Password: string(encryptedPassword),
 	}
 
@@ -70,6 +73,9 @@ func (rc *RegisterController) Register(c *gin.Context) {
 	}
 
 	signupResponse := domain.RegisterResponse{
+		Code:         1,
+		Message:      "success",
+		Data:         user.UserID,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}
