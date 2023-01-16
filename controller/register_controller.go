@@ -28,7 +28,9 @@ func (rc *RegisterController) Register(c *gin.Context) {
 
 	_, err = rc.RegisterUsecase.GetUserByEmail(c, request.Email)
 	if err == nil {
-		c.JSON(http.StatusConflict, domain.ErrorResponse{Message: "User already exists with the given email."})
+		c.JSON(http.StatusConflict, domain.ErrorResponse{
+			Code:    -1,
+			Message: "User already exists with the given email."})
 		return
 	}
 
@@ -71,6 +73,9 @@ func (rc *RegisterController) Register(c *gin.Context) {
 	}
 
 	signupResponse := domain.RegisterResponse{
+		Code:         1,
+		Message:      "success",
+		Data:         user.UserID,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}

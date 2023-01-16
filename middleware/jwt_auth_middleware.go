@@ -29,7 +29,9 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Not authorized"})
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Code:    -10,
+			Message: "Not authorized"})
 		c.Abort()
 	}
 }

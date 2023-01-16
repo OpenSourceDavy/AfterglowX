@@ -26,12 +26,16 @@ func (lc *LoginController) Login(c *gin.Context) {
 
 	user, _ := lc.LoginUseCase.GetUserByEmail(c, request.Email)
 	if user == (domain.User{}) {
-		c.JSON(http.StatusNotFound, domain.ErrorResponse{Message: "User not found with the given email"})
+		c.JSON(http.StatusNotFound, domain.ErrorResponse{
+			Code:    -1,
+			Message: "User not found with the given email/phone."})
 		return
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)) != nil {
-		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Invalid credentials"})
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Code:    -2,
+			Message: "Invalid credentials"})
 		return
 	}
 
@@ -50,6 +54,9 @@ func (lc *LoginController) Login(c *gin.Context) {
 	}
 
 	loginResponse := domain.LoginResponse{
+		Code:         1,
+		Message:      "success",
+		Data:         user.UserID,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}
