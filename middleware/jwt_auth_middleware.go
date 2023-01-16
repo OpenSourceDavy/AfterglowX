@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/wwkeyboard/sunsetwx/domain"
@@ -12,9 +11,8 @@ import (
 func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		t := strings.Split(authHeader, " ")
-		if len(t) == 2 {
-			authToken := t[1]
+		if len(authHeader) > 0 {
+			authToken := authHeader
 			authorized, err := util.IsAuthorized(authToken, secret)
 			if authorized {
 				userID, err := util.ExtractIDFromToken(authToken, secret)

@@ -23,14 +23,14 @@ type AlarmRuleRepository interface {
 	BeforeCreate(scope *gorm.Scope)
 	BeforeUpdate(scope *gorm.Scope)
 	CreateRule(rule *AlarmRule) error
-	GetAlarmRuleByUserID(userID string) (res AlarmRule, err error)
+	GetAlarmRuleByUserID(userID string) (res []AlarmRule, err error)
 	UpdateAlarmRule(rule *AlarmRule) error
 	DeleteAlarmRule(ruleID string) error
 }
 
 type AlarmRuleUseCase interface {
 	CreateRule(rule *AlarmRule) error
-	GetAlarmRuleByUserID(userID string) (res AlarmRule, err error)
+	GetAlarmRuleByUserID(userID string) (res []AlarmRule, err error)
 	UpdateAlarmRule(rule *AlarmRule) error
 	DeleteAlarmRule(ruleID string) error
 }

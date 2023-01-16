@@ -18,7 +18,7 @@ func (as *alarmRuleUseCase) CreateRule(rule *domain.AlarmRule) error {
 	return as.alarmRuleRepository.CreateRule(rule)
 }
 
-func (as *alarmRuleUseCase) GetAlarmRuleByUserID(userID string) (res domain.AlarmRule, err error) {
+func (as *alarmRuleUseCase) GetAlarmRuleByUserID(userID string) (res []domain.AlarmRule, err error) {
 	return as.alarmRuleRepository.GetAlarmRuleByUserID(userID)
 }
 

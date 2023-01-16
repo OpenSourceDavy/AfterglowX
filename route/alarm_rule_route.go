@@ -13,4 +13,7 @@ func NewAlarmRuleRouter(group *gin.RouterGroup) {
 		AlarmRuleUseCase: service.NewAlarmRuleUseCase(rp),
 	}
 	group.POST("/createRule", rc.CreateAlarmRule)
+	group.POST("/deleteRule", rc.DeleteAlarmRule)
+	group.POST("/rule", rc.GetAlarmRuleByUserID)
+	group.POST("/updateRule", rc.UpdateAlarmRule)
 }

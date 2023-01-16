@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/wwkeyboard/sunsetwx/domain"
 )
 
@@ -19,6 +20,8 @@ func (ac *AlarmRuleController) CreateAlarmRule(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
+
+	alarmRule.RuleID = uuid.NewString()
 
 	err = ac.AlarmRuleUseCase.CreateRule(&alarmRule)
 	if err != nil {

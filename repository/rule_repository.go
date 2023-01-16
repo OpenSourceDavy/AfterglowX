@@ -38,8 +38,8 @@ func (r *alarmRuleRepository) CreateRule(data *domain.AlarmRule) error {
 	return err
 }
 
-func (r *alarmRuleRepository) GetAlarmRuleByUserID(userID string) (res domain.AlarmRule, err error) {
-	err = r.DB.Where("user_id = ?", userID).First(&res).Error
+func (r *alarmRuleRepository) GetAlarmRuleByUserID(userID string) (res []domain.AlarmRule, err error) {
+	err = r.DB.Where("user_id = ?", userID).Find(&res).Error
 
 	if err != nil {
 		logs.Log.Error("GetAlarmRuleByUserID error, error message: %s", err)
