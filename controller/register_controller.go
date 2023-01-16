@@ -25,14 +25,14 @@ func (rc *RegisterController) Register(c *gin.Context) {
 		return
 	}
 
-	_, err = rc.RegisterUsecase.GetUserByEmail(c, request.Email)
+	_, err = rc.RegisterUsecase.GetUserByEmail(c, request.UserInfo.Email)
 	if err == nil {
 		c.JSON(http.StatusConflict, domain.ErrorResponse{Message: "User already exists with the given email."})
 		return
 	}
 
 	encryptedPassword, err := bcrypt.GenerateFromPassword(
-		[]byte(request.Password),
+		[]byte(request.UserInfo.Password),
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
@@ -43,8 +43,8 @@ func (rc *RegisterController) Register(c *gin.Context) {
 
 	user := domain.User{
 		UserID:   uuid.NewString(),
-		UserName: request.Name,
-		Email:    request.Email,
+		UserName: request.UserInfo.UserName,
+		Email:    request.UserInfo.Email,
 		Password: string(encryptedPassword),
 	}
 

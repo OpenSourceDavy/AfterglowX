@@ -1,1 +1,0 @@
-{"level":"error","msg":"CreateRule error, error message: %sError 1146 (42S02): Table 'afterglowx.alarm_rule' doesn't exist","time":"2023-01-16T00:26:20-05:00"}

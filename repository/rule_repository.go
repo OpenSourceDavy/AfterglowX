@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/jinzhu/gorm"
 	"github.com/wwkeyboard/sunsetwx/domain"
 	"github.com/wwkeyboard/sunsetwx/logs"
@@ -16,14 +14,6 @@ func NewAlarmRuleRepository() domain.AlarmRuleRepository {
 	return &alarmRuleRepository{
 		DB: db11,
 	}
-}
-
-func (r *alarmRuleRepository) BeforeCreate(scope *gorm.Scope) {
-	scope.SetColumn("CreatedOn", time.Now().Unix())
-}
-
-func (r *alarmRuleRepository) BeforeUpdate(scope *gorm.Scope) {
-	scope.SetColumn("ModifiedOn", time.Now().Unix())
 }
 
 func (r *alarmRuleRepository) CreateRule(data *domain.AlarmRule) error {

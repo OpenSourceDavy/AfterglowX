@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -18,9 +20,15 @@ type User struct {
 }
 
 type UserRepository interface {
-	BeforeCreate(scope *gorm.Scope)
-	BeforeUpdate(scope *gorm.Scope)
 	CreateUser(user *User) error
 	GetUser(data map[string]interface{}) (res User, err error)
 	GetUserByEmail(email string) (user User, err error)
+}
+
+func (u *User) BeforeCreate(scope *gorm.Scope) {
+	scope.SetColumn("CreatedOn", time.Now().Unix())
+}
+
+func (u *User) BeforeUpdate(scope *gorm.Scope) {
+	scope.SetColumn("ModifiedOn", time.Now().Unix())
 }

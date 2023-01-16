@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,8 +22,6 @@ type AlarmRule struct {
 }
 
 type AlarmRuleRepository interface {
-	BeforeCreate(scope *gorm.Scope)
-	BeforeUpdate(scope *gorm.Scope)
 	CreateRule(rule *AlarmRule) error
 	GetAlarmRuleByUserID(userID string) (res []AlarmRule, err error)
 	UpdateAlarmRule(rule *AlarmRule) error
@@ -33,4 +33,12 @@ type AlarmRuleUseCase interface {
 	GetAlarmRuleByUserID(userID string) (res []AlarmRule, err error)
 	UpdateAlarmRule(rule *AlarmRule) error
 	DeleteAlarmRule(ruleID string) error
+}
+
+func (r *AlarmRule) BeforeCreate(scope *gorm.Scope) {
+	scope.SetColumn("CreatedOn", time.Now().Unix())
+}
+
+func (r *AlarmRule) BeforeUpdate(scope *gorm.Scope) {
+	scope.SetColumn("ModifiedOn", time.Now().Unix())
 }

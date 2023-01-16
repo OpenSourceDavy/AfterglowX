@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/jinzhu/gorm"
 	"github.com/wwkeyboard/sunsetwx/domain"
 	"github.com/wwkeyboard/sunsetwx/logs"
@@ -18,15 +16,6 @@ func NewUserRepository() domain.UserRepository {
 	}
 }
 
-func (u *userRepository) BeforeCreate(scope *gorm.Scope) {
-	scope.SetColumn("CreatedOn", time.Now().Unix())
-
-}
-
-func (u *userRepository) BeforeUpdate(scope *gorm.Scope) {
-	scope.SetColumn("ModifiedOn", time.Now().Unix())
-}
-
 func (u *userRepository) CreateUser(data *domain.User) error {
 
 	err := u.DB.Create(data).Error
@@ -40,10 +29,12 @@ func (u *userRepository) CreateUser(data *domain.User) error {
 }
 
 func (u *userRepository) GetUser(data map[string]interface{}) (res domain.User, err error) {
+	id := data["id"].(string)
 	email := data["email"].(string)
 	cell := data["cell"].(string)
-
-	if len(email) > 0 {
+	if len(id) > 0 {
+		err = u.DB.Where("user_id = ?", id).First(&res).Error
+	} else if len(email) > 0 {
 		err = u.DB.Where("email = ?", email).First(&res).Error
 	} else if len(cell) > 0 {
 		err = u.DB.Where("cell = ?", cell).First(&res).Error
