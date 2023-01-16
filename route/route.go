@@ -11,6 +11,7 @@ func Setup(routerV1 *gin.RouterGroup) {
 	// All Public APIs
 	NewRegisterRouter(publicRouterV1)
 	NewLoginRouter(publicRouterV1)
+	NewRefreshTokenRouter(publicRouterV1)
 
 	protectedRouterV1 := routerV1.Group("")
 	// Middleware to verify AccessToken
