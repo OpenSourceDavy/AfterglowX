@@ -94,6 +94,23 @@ type OpenWeatherCity struct {
 	Sunset     int64  `json:"sunset"`
 }
 
+type WindyResp struct {
+	Ts    []int64 `json:"ts"`
+	Units struct {
+		TempSurface     string `json:"temp-surface"`
+		DewpointSurface string `json:"dewpoint-surface"`
+		LcloudsSurface  string `json:"lclouds-surface"`
+		McloudsSurface  string `json:"mclouds-surface"`
+		HcloudsSurface  string `json:"hclouds-surface"`
+	} `json:"units"`
+	TempSurface     []float64 `json:"temp-surface"`
+	DewpointSurface []float64 `json:"dewpoint-surface"`
+	LcloudsSurface  []float64 `json:"lclouds-surface"`
+	McloudsSurface  []float64 `json:"mclouds-surface"`
+	HcloudsSurface  []float64 `json:"hclouds-surface"`
+	Warning         string    `json:"warning"`
+}
+
 type QualityUseCase interface {
 	GetSunsetQuality(lat float64, lon float64) (float64, error)
 	GetSunriseQuality(lat float64, lon float64) (float64, error)
