@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type QualityRequest struct {
 	Lat  float64 `json:"lat"`
 	Lon  float64 `json:"lon"`
@@ -92,6 +94,86 @@ type OpenWeatherCity struct {
 	TimeZone   int64  `json:"timezone"`
 	Sunrise    int64  `json:"sunrise"`
 	Sunset     int64  `json:"sunset"`
+}
+
+type AQIResp struct {
+	Status string `json:"status"`
+	Data   struct {
+		Aqi          int64 `json:"aqi"`
+		Idx          int64 `json:"idx"`
+		Attributions []struct {
+			URL  string `json:"url"`
+			Name string `json:"name"`
+			Logo string `json:"logo,omitempty"`
+		} `json:"attributions"`
+		City struct {
+			Geo      []float64 `json:"geo"`
+			Name     string    `json:"name"`
+			URL      string    `json:"url"`
+			Location string    `json:"location"`
+		} `json:"city"`
+		Dominentpol string `json:"dominentpol"`
+		Iaqi        struct {
+			Dew struct {
+				V int64 `json:"v"`
+			} `json:"dew"`
+			H struct {
+				V float64 `json:"v"`
+			} `json:"h"`
+			No2 struct {
+				V float64 `json:"v"`
+			} `json:"no2"`
+			O3 struct {
+				V float64 `json:"v"`
+			} `json:"o3"`
+			P struct {
+				V float64 `json:"v"`
+			} `json:"p"`
+			Pm25 struct {
+				V int64 `json:"v"`
+			} `json:"pm25"`
+			T struct {
+				V float64 `json:"v"`
+			} `json:"t"`
+			W struct {
+				V float64 `json:"v"`
+			} `json:"w"`
+			Wg struct {
+				V float64 `json:"v"`
+			} `json:"wg"`
+		} `json:"iaqi"`
+		Time struct {
+			S   string `json:"s"`
+			Tz  string `json:"tz"`
+			V   int64  `json:"v"`
+			Iso string `json:"iso"`
+		} `json:"time"`
+		Forecast struct {
+			Daily struct {
+				O3 []struct {
+					Avg int64  `json:"avg"`
+					Day string `json:"day"`
+					Max int64  `json:"max"`
+					Min int64  `json:"min"`
+				} `json:"o3"`
+				Pm10 []struct {
+					Avg int64  `json:"avg"`
+					Day string `json:"day"`
+					Max int64  `json:"max"`
+					Min int64  `json:"min"`
+				} `json:"pm10"`
+				Pm25 []struct {
+					Avg int64  `json:"avg"`
+					Day string `json:"day"`
+					Max int64  `json:"max"`
+					Min int64  `json:"min"`
+				} `json:"pm25"`
+			} `json:"daily"`
+		} `json:"forecast"`
+		Debug struct {
+			Sync time.Time `json:"sync"`
+		} `json:"debug"`
+	} `json:"data"`
 }
 
 type QualityUseCase interface {
