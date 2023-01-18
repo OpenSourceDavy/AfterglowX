@@ -18,5 +18,6 @@ func Setup(routerV1 *gin.RouterGroup) {
 	protectedRouterV1.Use(middleware.JwtAuthMiddleware(settings.JwtSecret))
 	// All Private APIs
 	NewAlarmRuleRouter(protectedRouterV1)
+	NewQualityRouter(protectedRouterV1)
 
 }

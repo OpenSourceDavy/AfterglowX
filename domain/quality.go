@@ -7,31 +7,35 @@ type QualityRequest struct {
 }
 
 type QualityResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    string `json:"data"`
+	Code    int     `json:"code"`
+	Message string  `json:"message"`
+	Data    float64 `json:"data"`
 }
 
 type Metrics struct {
-	Longitude        float64
-	Latitude         float64
-	City             string
-	Country          string
-	MainDescription  string
-	SubDescription   string
-	Sunrise          int64
-	Sunset           int64
-	Temperature      float64
-	Pressure         int64
-	Humidity         int64
-	Precipitation    float64
-	WindSpeed        float64
-	AvgWindSpeed     float64
-	WindDirection    int64
-	AvgWindDirection int64
-	CloudCoverage    int64
-	Visibility       int64
-	AirQuality       int64
+	Longitude float64
+	Latitude  float64
+	// City             string
+	// Country          string
+	// MainDescription  string
+	// SubDescription   string
+	Sunrise     int64
+	Sunset      int64
+	Temperature float64
+	DewPoint    float64
+	// Pressure         int64
+	// Humidity         int64
+	// Precipitation    float64
+	// WindSpeed        float64
+	// AvgWindSpeed     float64
+	// WindDirection    int64
+	// AvgWindDirection int64
+	LowCloudCoverage float64
+	MidCloudCoverage float64
+	HiCloudCoverage  float64
+	GroundLevel      int64
+	// Visibility       int64
+	// AirQuality       int64
 }
 
 type OpenWeatherResp struct {
@@ -92,6 +96,15 @@ type OpenWeatherCity struct {
 	TimeZone   int64  `json:"timezone"`
 	Sunrise    int64  `json:"sunrise"`
 	Sunset     int64  `json:"sunset"`
+}
+
+type WindyReq struct {
+	Lat        string   `json:"lat"`
+	Lon        string   `json:"lon"`
+	Model      string   `json:"model"`
+	Parameters []string `json:"parameters"`
+	Levels     []string `json:"levels"`
+	Key        string   `json:"key"`
 }
 
 type WindyResp struct {

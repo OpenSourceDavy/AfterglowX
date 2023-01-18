@@ -21,6 +21,12 @@ var (
 	JwtExpHour          int
 	RefreshTokenSecret  string
 	RefreshTokenExpHour int
+
+	WindyKey string
+	WindyURL string
+
+	OpenWeatherAppID string
+	OpenWeatherURL   string
 )
 
 func init() {
@@ -62,4 +68,15 @@ func LoadApp() {
 	RefreshTokenSecret = sec.Key("REFRESH_TOKEN_SECRET").MustString("!@)*#)!@U#@*!(!)")
 	RefreshTokenExpHour = sec.Key("REFRESH_TOKEN_EXPIRATION_HOUR").MustInt(2)
 	PageSize = sec.Key("PAGE_SIZE").MustInt(10)
+}
+
+func LoadAPIKeys() {
+	sec, err := Cfg.GetSection("api")
+	if err != nil {
+		logs.Log.Error("Fail to get section 'api': %v", err)
+	}
+	WindyKey = sec.Key("WINDY_KEY").String()
+	WindyURL = sec.Key("WINDY_URL").String()
+	OpenWeatherAppID = sec.Key("OPEN_WEATHER_APP_ID").String()
+	OpenWeatherURL = sec.Key("OPEN_WEATHER_URL").String()
 }
