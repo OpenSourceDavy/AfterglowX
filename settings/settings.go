@@ -40,6 +40,7 @@ func init() {
 	LoadBase()
 	LoadServer()
 	LoadApp()
+	LoadAPIKeys()
 }
 
 func LoadBase() {

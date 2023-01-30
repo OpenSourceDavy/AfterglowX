@@ -1,0 +1,2 @@
+{"level":"error","msg":"GetMetrics Unmarshal error, error message: %sjson: cannot unmarshal string into Go struct field OpenWeatherResp.message of type int","time":"2023-01-18T00:32:29-05:00"}
+{"level":"error","msg":"GetSunsetQuality error, error message: %sjson: cannot unmarshal string into Go struct field OpenWeatherResp.message of type int","time":"2023-01-18T00:32:29-05:00"}

@@ -106,9 +106,9 @@ func (qu *qualityUseCase) GetSunsetQuality(lat float64, lon float64) (float64, e
 	}
 
 	// Cloud Base Height (h) = (Temp - Dew Point ) / 10 * 1247 + Elevation
-	h := (metrics.Temperature-metrics.DewPoint)/10*1247 + float64(metrics.GroundLevel)
+	h := ((metrics.Temperature-273.15)-(metrics.DewPoint-273.15))/10*1247 + float64(metrics.GroundLevel)
 
-	// Longititude offset
+	// Longitude offset
 	lonOffset := 2 * math.Acos(6371.0088/(6371.0088+h))
 
 	var newLat float64
@@ -118,18 +118,18 @@ func (qu *qualityUseCase) GetSunsetQuality(lat float64, lon float64) (float64, e
 		newLat = lat - lonOffset
 	}
 
-	metrics_2, err := GetMetrics(newLat, lon, "sunset")
+	metrics2, err := GetMetrics(newLat, lon, "sunset")
 	if err != nil {
 		logs.Log.Error("GetSunsetQuality error, error message: %s", err)
 	}
 
 	var quality float64
 	if h <= 2000 {
-		quality = metrics.LowCloudCoverage - metrics_2.LowCloudCoverage
+		quality = metrics.LowCloudCoverage - metrics2.LowCloudCoverage
 	} else if h <= 7000 {
-		quality = metrics.MidCloudCoverage - metrics_2.MidCloudCoverage
+		quality = metrics.MidCloudCoverage - metrics2.MidCloudCoverage
 	} else if h <= 12000 {
-		quality = metrics.HiCloudCoverage - metrics_2.HiCloudCoverage
+		quality = metrics.HiCloudCoverage - metrics2.HiCloudCoverage
 	}
 
 	if quality < 0 {
